@@ -1,0 +1,7 @@
+boto3
+feedparser
+numpy
+pandas
+requests
+yfinance
+ta
