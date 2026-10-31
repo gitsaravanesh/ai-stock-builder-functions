@@ -1,5 +1,4 @@
 boto3
-numpy
-pandas
-requests
 yfinance
+pandas
+numpy
