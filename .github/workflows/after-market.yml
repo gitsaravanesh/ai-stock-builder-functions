@@ -39,3 +39,16 @@ jobs:
           tags: |
             ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:after-market-latest
             ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:after-market-${{ github.sha }}
+
+      - name: Deploy image to Lambda
+        run: |
+          aws lambda update-function-code \
+            --function-name stock-ai-after-market \
+            --image-uri ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:after-market \
+            --region ${{ vars.AWS_REGION }}
+
+      - name: Wait for Lambda update
+        run: |
+          aws lambda wait function-updated \
+            --function-name stock-ai-after-market \
+            --region ${{ vars.AWS_REGION }}            
