@@ -44,7 +44,7 @@ jobs:
         run: |
           aws lambda update-function-code \
             --function-name stock-function \
-            --image-uri ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:before-market \
+            --image-uri 017118229810.dkr.ecr.us-east-1.amazonaws.com/stock-ai:before-market-${{ github.sha }} \
             --region ${{ vars.AWS_REGION }}
 
       - name: Wait for Lambda update
