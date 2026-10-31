@@ -43,12 +43,12 @@ jobs:
       - name: Deploy image to Lambda
         run: |
           aws lambda update-function-code \
-            --function-name stock-ai-before-market \
+            --function-name stock-function \
             --image-uri ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:before-market \
             --region ${{ vars.AWS_REGION }}
 
       - name: Wait for Lambda update
         run: |
           aws lambda wait function-updated \
-            --function-name stock-ai-before-market \
+            --function-name stock-function \
             --region ${{ vars.AWS_REGION }}
