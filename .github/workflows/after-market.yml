@@ -36,6 +36,7 @@ jobs:
           context: ./after_market
           file: ./after_market/Dockerfile
           push: true
+          provenance: false
           tags: |
             ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:after-market-latest
             ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:after-market-${{ github.sha }}
@@ -44,7 +45,7 @@ jobs:
         run: |
           aws lambda update-function-code \
             --function-name stock-after-function \
-            --image-uri ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:after-market \
+            --image-uri ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:after-market-${{ github.sha }} \
             --region ${{ vars.AWS_REGION }}
 
       - name: Wait for Lambda update

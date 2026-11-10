@@ -36,6 +36,7 @@ jobs:
           context: ./next_trading_day
           file: ./next_trading_day/Dockerfile
           push: true
+          provenance: false
           tags: |
             ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:next-trading-day-latest
             ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:next-trading-day-${{ github.sha }}

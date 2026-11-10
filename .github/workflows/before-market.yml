@@ -36,6 +36,7 @@ jobs:
           context: ./before_market
           file: ./before_market/Dockerfile
           push: true
+          provenance: false
           tags: |
             ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:before-market-latest
             ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_REPOSITORY }}:before-market-${{ github.sha }}
