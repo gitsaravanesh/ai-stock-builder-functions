@@ -87,6 +87,10 @@ def safe_float(value):
 # MARKET PRICE LOOKUP
 # ============================================================
 
+class NoSessionBarError(ValueError):
+    """Yahoo has no completed bar for the evaluation date (holiday or not yet published)."""
+
+
 def _normalise_index_date(index_value):
     ts = pd.Timestamp(index_value)
     if ts.tzinfo is not None:
@@ -145,7 +149,7 @@ def get_reference_and_actual_close(ticker, evaluation_date):
 
     if actual is None:
         available_dates = [d.isoformat() for d, _ in closes[-5:]]
-        raise ValueError(
+        raise NoSessionBarError(
             f"No completed price bar found for evaluation date "
             f"{evaluation_date.isoformat()}; recent returned dates={available_dates}"
         )
@@ -256,6 +260,7 @@ def evaluate_candidate(candidate, evaluation_date):
 
     except Exception as exc:
         result["error"] = str(exc)
+        result["no_session_bar"] = isinstance(exc, NoSessionBarError)
         print(f"Evaluation failed for {ticker}: {exc}")
 
     return result
@@ -380,6 +385,20 @@ def main():
         ticker = candidate.get("ticker", "UNKNOWN")
         print(f"\nEvaluating {ticker}...")
         results.append(evaluate_candidate(candidate, evaluation_date))
+
+    # Every stock lacking today's bar means no session was evaluated, not that
+    # every prediction failed. Don't write a misleading evaluation.json.
+    if results and all(item.get("no_session_bar") for item in results):
+        message = (
+            f"No completed market session for {evaluation_date.isoformat()} "
+            "(holiday, or Yahoo has not published today's close). No evaluation written."
+        )
+        print(f"SKIPPED: {message}")
+        return {
+            "status": "SKIPPED",
+            "message": message,
+            "evaluation_date": evaluation_date.isoformat(),
+        }
 
     report = build_evaluation_report(
         prediction_report, evaluation_date, results, prediction_key
