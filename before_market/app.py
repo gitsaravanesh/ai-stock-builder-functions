@@ -17,6 +17,13 @@ from botocore.config import Config
 from ta.momentum import RSIIndicator
 from ta.trend import SMAIndicator, MACD
 
+# Lambda's filesystem is read-only except /tmp; the yfinance cache cannot
+# write under /home/sbx_user1051.
+try:
+    yf.set_tz_cache_location("/tmp/yfinance")
+except Exception as exc:
+    print(f"Could not configure yfinance cache location: {exc}")
+
 # ============================ CONFIGURATION ============================
 AWS_REGION = os.getenv("AWS_REGION", "us-east-1")
 S3_BUCKET = os.getenv("S3_BUCKET", "saravanesh-stock-ai-results")
