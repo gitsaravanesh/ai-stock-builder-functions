@@ -228,16 +228,13 @@ def evaluate_candidate(candidate, evaluation_date):
             actual_direction = "FLAT"
             actual_outcome = 0.0
 
-        probability_direction = "POSITIVE" if probability >= 50.0 else "NEGATIVE"
-        # The expected move is the model's explicit price call, so it decides the
-        # direction. Probability only breaks a zero-move tie.
+        # The expected move sign decides the direction; probability only breaks a zero-move tie.
         if expected_move > 0:
             predicted_direction = "POSITIVE"
         elif expected_move < 0:
             predicted_direction = "NEGATIVE"
         else:
-            predicted_direction = probability_direction
-        signals_conflict = predicted_direction != probability_direction
+            predicted_direction = "POSITIVE" if probability >= 50.0 else "NEGATIVE"
 
         # A flat actual result is neither a positive nor negative direction.
         # Keep direction_correct null rather than marking it as a false call.
@@ -259,8 +256,6 @@ def evaluate_candidate(candidate, evaluation_date):
             "actual_return_percent": actual_return,
             "actual_direction": actual_direction,
             "predicted_direction": predicted_direction,
-            "probability_direction": probability_direction,
-            "signals_conflict": signals_conflict,
             "direction_correct": direction_correct,
             "expected_move_error_percent": move_error,
             "absolute_move_error_percent": abs(move_error),
